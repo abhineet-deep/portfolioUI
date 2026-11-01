@@ -1,0 +1,156 @@
+@import "lenis/dist/lenis.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+.dark {
+  --bg: 15 21 34;
+  --surface: 22 30 46;
+  --line: 38 49 74;
+  --ink: 232 237 246;
+  --muted: 137 149 173;
+  --teal: 61 214 198;
+  --amber: 242 179 61;
+  --coral: 255 126 157;
+  --iris: 147 160 255;
+  color-scheme: dark;
+}
+
+.light {
+  --bg: 242 244 249;
+  --surface: 255 255 255;
+  --line: 217 223 235;
+  --ink: 19 26 42;
+  --muted: 90 101 124;
+  --teal: 14 159 146;
+  --amber: 185 122 0;
+  --coral: 214 56 106;
+  --iris: 75 91 214;
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    scroll-behavior: auto;
+  }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    overflow-x: hidden;
+    font-variation-settings: "wdth" 100;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--iris));
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+  ::selection {
+    background: rgb(var(--iris) / 0.35);
+  }
+}
+
+/* Film grain: fixed, non-interactive, ~5% opacity */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.light .grain {
+  filter: invert(1);
+}
+
+/* Reactive name: resting state; JS overrides font-variation-settings inline near the cursor */
+.rname-letter {
+  font-variation-settings: "wght" 320, "wdth" 78;
+  transition: font-variation-settings 0.25s ease-out;
+}
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .rname-letter {
+    font-variation-settings: "wght" 700, "wdth" 100;
+    transition: none;
+  }
+}
+
+/* Stack marquee */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 45s linear infinite;
+}
+.marquee-track[data-dir="right"] {
+  animation-name: marquee-right;
+  animation-duration: 55s;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Gateway packets travel along SVG paths only while the card is active */
+@keyframes packet {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+.packet {
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+  opacity: 0;
+}
+.group:hover .packet,
+.group:focus-within .packet {
+  opacity: 1;
+  animation: packet 1.8s linear infinite;
+}
+
+/* Analyzer bars */
+.abar {
+  transform-origin: bottom;
+  transform: scaleY(0.6);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i) * 40ms);
+}
+.group:hover .abar,
+.group:focus-within .abar {
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none !important;
+    width: auto;
+    flex-wrap: wrap;
+  }
+  .marquee-dup {
+    display: none !important;
+  }
+  .marquee-mask {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .packet {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .abar {
+    transition: none;
+    transform: scaleY(1);
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}
