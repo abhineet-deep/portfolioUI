@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { experience } from "@/lib/content";
+import { Reveal } from "./Reveal";
 
 export function Timeline() {
   const listRef = useRef<HTMLOListElement>(null);
@@ -12,7 +13,9 @@ export function Timeline() {
 
   return (
     <section id={experience.id} className="scroll-mt-24 py-24">
-      <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{experience.heading}</h2>
+      <Reveal>
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{experience.heading}</h2>
+      </Reveal>
 
       <ol ref={listRef} className="relative mt-12 space-y-12 pl-10 sm:pl-14">
         <span aria-hidden="true" className="absolute bottom-2 left-[11px] top-2 w-px bg-line sm:left-[15px]" />
@@ -29,10 +32,10 @@ export function Timeline() {
             >
               {String(i + 1).padStart(2, "0")}
             </span>
-            <p className="font-mono text-sm text-muted">{job.period}</p>
+            {job.period && <p className="font-mono text-sm text-muted">{job.period}</p>}
             <h3 className="mt-1 text-xl font-semibold">{job.org}</h3>
-            <p className="text-teal">{job.role}</p>
-            <p className="mt-2 max-w-[65ch] text-muted">{job.description}</p>
+            {job.role && <p className="text-teal">{job.role}</p>}
+            {job.description && <p className="mt-2 max-w-[65ch] text-muted">{job.description}</p>}
           </li>
         ))}
       </ol>

@@ -75,6 +75,21 @@ export const markReady = (name: SlotName) => {
 export const setHighlight = (id: string | null) => {
   if (state.highlight !== id) set({ highlight: id });
 };
+// The load sequence (trace bars + 3D node assembly) starts once the scene is ready (or gave up
+// waiting) AND the optional first-visit boot strip has finished.
+let sceneWants = false;
+let bootHeld = false;
+const maybeStart = () => {
+  if (sceneWants && !bootHeld && !state.introStarted) set({ introStarted: true });
+};
 export const startIntro = () => {
-  if (!state.introStarted) set({ introStarted: true });
+  sceneWants = true;
+  maybeStart();
+};
+export const holdIntro = () => {
+  bootHeld = true;
+};
+export const releaseIntro = () => {
+  bootHeld = false;
+  maybeStart();
 };

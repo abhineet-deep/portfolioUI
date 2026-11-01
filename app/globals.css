@@ -101,6 +101,58 @@
   animation-play-state: paused;
 }
 
+/* Hovering a stack filter chip dims everything in the marquee outside that group */
+html[data-stack-group="runtime"] .marquee li:not([data-groups~="runtime"]),
+html[data-stack-group="aws"] .marquee li:not([data-groups~="aws"]),
+html[data-stack-group="data"] .marquee li:not([data-groups~="data"]),
+html[data-stack-group="messaging"] .marquee li:not([data-groups~="messaging"]),
+html[data-stack-group="tooling"] .marquee li:not([data-groups~="tooling"]) {
+  opacity: 0.25;
+}
+html[data-stack-group="runtime"] .marquee li[data-groups~="runtime"],
+html[data-stack-group="aws"] .marquee li[data-groups~="aws"],
+html[data-stack-group="data"] .marquee li[data-groups~="data"],
+html[data-stack-group="messaging"] .marquee li[data-groups~="messaging"],
+html[data-stack-group="tooling"] .marquee li[data-groups~="tooling"] {
+  color: rgb(var(--ink));
+}
+
+/* Theme switch: the new theme is revealed by an animated clip-path (see ThemeToggle) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+/* 1px border lit by the cursor, sharing --x/--y with the card spotlight */
+.card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(260px circle at var(--x, 50%) var(--y, 50%), rgb(var(--spot) / 0.9), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.group:hover > .card-border {
+  opacity: 1;
+}
+@media (hover: none) {
+  .card-border {
+    display: none;
+  }
+}
+
 /* Gateway packets travel along SVG paths only while the card is active */
 @keyframes packet {
   from { offset-distance: 0%; }

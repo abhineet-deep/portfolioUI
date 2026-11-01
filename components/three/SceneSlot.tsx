@@ -11,10 +11,12 @@ type Props = {
   fallback: React.ReactNode;
   /** Animate only while the nearest `.group` ancestor (a card) is hovered or focused. */
   engageOnParent?: boolean;
+  /** Label shown by the custom cursor over this slot (see Cursor). */
+  cursor?: string;
 };
 
 /** Placeholder the shared canvas draws into. Decorative, so hidden from assistive tech. */
-export function SceneSlot({ name, className, fallback, engageOnParent }: Props) {
+export function SceneSlot({ name, className, fallback, engageOnParent, cursor }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const ready = useSceneStore((s) => !!s.ready[name]);
   const labels = useSceneStore((s) => s.labels[name]);
@@ -47,7 +49,7 @@ export function SceneSlot({ name, className, fallback, engageOnParent }: Props) 
   }, [name, engageOnParent]);
 
   return (
-    <div ref={ref} aria-hidden="true" className={className}>
+    <div ref={ref} aria-hidden="true" data-cursor={cursor} className={className}>
       <div className={clsx("absolute inset-0 transition-opacity duration-500", ready && "opacity-0")}>{fallback}</div>
       {labels?.map((l) => (
         <span

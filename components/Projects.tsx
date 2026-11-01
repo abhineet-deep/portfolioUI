@@ -5,11 +5,11 @@ import {
   gatewayDiagram,
   projects,
   projectsSection,
-  stack,
   type Project,
 } from "@/lib/content";
 import { accentBorder, accentText } from "@/lib/accent";
 import { SpotlightCard } from "./SpotlightCard";
+import { Reveal } from "./Reveal";
 import { SceneSlot } from "./three/SceneSlot";
 
 function Header({ p }: { p: Project }) {
@@ -110,11 +110,13 @@ export function Projects() {
   const { "llm-gateway": gateway, "statement-analyzer": analyzer, flowsmith, payments } = projects;
   return (
     <section id="projects" className="scroll-mt-24 py-24">
-      <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{projectsSection.heading}</h2>
+      <Reveal>
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{projectsSection.heading}</h2>
+      </Reveal>
       <p className="mt-3 max-w-[60ch] text-muted">{projectsSection.intro}</p>
 
       <div className="mt-10 grid gap-4 md:grid-cols-6">
-        <SpotlightCard accent={gateway.accent} label={gateway.title} className="md:col-span-4 md:row-span-2">
+        <SpotlightCard accent={gateway.accent} label={gateway.title} tilt={false} className="md:col-span-4 md:row-span-2">
           <Header p={gateway} />
           <SceneSlot name="gateway" engageOnParent className="relative mt-6 aspect-[2/1] w-full max-w-lg" fallback={<GatewayDiagram />} />
           <Tags tags={gateway.tags} />
@@ -134,7 +136,7 @@ export function Projects() {
 
         <SpotlightCard accent={payments.accent} label={payments.title} className="md:col-span-6">
           <Header p={payments} />
-          <Tags tags={stack} />
+          <Tags tags={payments.tags} />
         </SpotlightCard>
       </div>
     </section>

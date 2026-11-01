@@ -25,6 +25,16 @@ Colors are CSS variables in `app/globals.css` (`:root` for dark, `.light` for li
 2. Push the repo to GitHub and import it at vercel.com/new. The Next.js preset needs no configuration.
 3. Or from the CLI: `npx vercel` for a preview, `npx vercel --prod` for production.
 
+## API and terminal
+
+The page has a small read-only JSON API (`app/api/*`, helpers in `lib/api/`): `GET /api/engineers/abhineet-deep`, `/api/projects`, `/api/projects/:slug`, `/api/health`, and `/api/openapi.json` (OpenAPI 3.1, generated from the Zod schemas). Responses are Zod-validated and carry `ETag`/`Cache-Control`, a measured `Server-Timing`, GET-only CORS, and a per-instance in-memory rate limit (429 + `Retry-After`). The terminal section calls it for real, and each request adds a live span to the hero trace.
+
+## Content rules
+
+Fields I don't know yet are left out of `lib/content.ts` (see the `// TODO` comments) and simply don't render. `npm run build` runs `scripts/check-content.mjs` first and fails if the word "TODO" appears inside a string in that file.
+
+Set `NEXT_PUBLIC_SITE_URL` on Vercel to your production origin so metadata, the sitemap and JSON-LD use it. It falls back to the Vercel URL.
+
 ## 3D scenes
 
 Three scenes share one fixed WebGL canvas (`components/three/SceneRoot.tsx`), loaded lazily after the page is idle. Each scene draws into a placeholder element (`SceneSlot`) using drei `View`.

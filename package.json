@@ -6,11 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prebuild": "node scripts/check-content.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",
+    "@vercel/analytics": "2.0.1",
+    "@vercel/speed-insights": "2.0.0",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "framer-motion": "14.9.0",
@@ -20,7 +23,8 @@
     "next-themes": "0.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "three": "0.186.1"
+    "three": "0.186.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/node": "24.19.2",

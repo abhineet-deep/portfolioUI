@@ -1,4 +1,5 @@
 import type Lenis from "lenis";
+import { playSound } from "./sound";
 
 type Registry = { lenis: Lenis | null };
 
@@ -7,6 +8,7 @@ export const scrollRegistry: Registry = { lenis: null };
 
 export const TOAST_EVENT = "app:toast";
 export const PALETTE_EVENT = "app:open-palette";
+export const RUN_API_EVENT = "app:run-api";
 
 const OFFSET = -80;
 
@@ -30,13 +32,21 @@ export function toast(message: string): void {
   window.dispatchEvent(new CustomEvent<string>(TOAST_EVENT, { detail: message }));
 }
 
-export async function copyEmail(email: string, message: string): Promise<void> {
+export async function copyEmail(email: string, message: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(email);
+    playSound("copy");
     toast(message);
+    return true;
   } catch {
     toast("Couldn't copy. Select the address manually.");
+    return false;
   }
+}
+
+/** Ask the terminal to run an API request (used by the command palette). */
+export function runApi(path: string): void {
+  window.dispatchEvent(new CustomEvent<string>(RUN_API_EVENT, { detail: path }));
 }
 
 export function openPalette(): void {

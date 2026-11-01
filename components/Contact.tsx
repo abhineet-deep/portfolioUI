@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { contact, footer, site } from "@/lib/content";
 import { copyEmail } from "@/lib/scroll";
 import { MagneticButton } from "./MagneticButton";
+import { Reveal } from "./Reveal";
 import { SceneSlot } from "./three/SceneSlot";
 import { MonogramFallback } from "./three/fallbacks/MonogramFallback";
 
@@ -25,7 +28,27 @@ function LinkedInIcon() {
 const linkClass =
   "inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-ink";
 
+function Check() {
+  const reduce = useReducedMotion();
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <motion.path d="M5 12.5l4.5 4.5L19 7.5" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, ease: "easeOut" }} />
+    </svg>
+  );
+}
+
 export function Contact() {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const onCopy = async () => {
+    if (!(await copyEmail(site.email, contact.copied))) return;
+    setCopied(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <>
       <section id={contact.id} className="scroll-mt-24 pb-20 pt-12">
@@ -34,9 +57,12 @@ export function Contact() {
           <SceneSlot
             name="monogram"
             className="absolute right-10 top-1/2 hidden select-none h-56 w-60 -translate-y-1/2 xl:right-16 xl:block"
+            cursor="drag"
             fallback={<MonogramFallback />}
           />
-          <h2 className="max-w-[20ch] text-4xl font-semibold tracking-tight sm:text-6xl">{contact.heading}</h2>
+          <Reveal>
+            <h2 className="max-w-[20ch] text-4xl font-semibold tracking-tight sm:text-6xl">{contact.heading}</h2>
+          </Reveal>
           <p className="mt-5 max-w-[60ch] text-lg text-muted">{contact.line}</p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -48,10 +74,17 @@ export function Contact() {
             </MagneticButton>
             <button
               type="button"
-              onClick={() => void copyEmail(site.email, contact.copied)}
-              className="rounded-full border border-line px-6 py-3.5 text-sm text-ink transition-colors hover:border-muted"
+              onClick={() => void onCopy()}
+              data-cursor="copy"
+              className="inline-flex min-w-[8.5rem] items-center justify-center gap-2 rounded-full border border-line px-6 py-3.5 text-sm text-ink transition-colors hover:border-muted"
             >
-              {contact.copyCta}
+              {copied ? (
+                <>
+                  <Check /> Copied
+                </>
+              ) : (
+                contact.copyCta
+              )}
             </button>
           </div>
 

@@ -1,11 +1,16 @@
 import { Nav } from "@/components/Nav";
+import { Boot } from "@/components/Boot";
+import { SectionTrace } from "@/components/SectionTrace";
+import { PaymentFlow } from "@/components/PaymentFlow";
 import { ReactiveName } from "@/components/ReactiveName";
 import { TraceHero } from "@/components/TraceHero";
 import { HeroActions } from "@/components/HeroActions";
 import { StackMarquee } from "@/components/StackMarquee";
+import { StackGroups } from "@/components/StackGroups";
 import { Projects } from "@/components/Projects";
 import { Timeline } from "@/components/Timeline";
 import { Contact } from "@/components/Contact";
+import { Terminal } from "@/components/Terminal";
 import { SceneSlot } from "@/components/three/SceneSlot";
 import { HeroFallback } from "@/components/three/fallbacks/HeroFallback";
 import { hero, site } from "@/lib/content";
@@ -14,8 +19,10 @@ export default function Home() {
   return (
     <>
       <Nav />
+      <SectionTrace />
       <main id="top" className="mx-auto max-w-content px-5 sm:px-8">
-        <section className="pb-20 pt-32 sm:pt-40">
+        <section id="hero" className="relative pb-20 pt-32 sm:pt-40">
+          <Boot />
           <p className="text-base text-muted sm:text-lg">{site.role}</p>
           <div className="mt-3">
             <ReactiveName name={site.name} />
@@ -31,8 +38,11 @@ export default function Home() {
             <TraceHero />
           </div>
         </section>
+        <Terminal />
         <StackMarquee />
+        <StackGroups />
         <Projects />
+        <PaymentFlow />
         <Timeline />
         <Contact />
       </main>

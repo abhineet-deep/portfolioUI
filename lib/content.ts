@@ -1,5 +1,6 @@
 // All copy, dates and links for the site live here. Components render from this file only.
-// Anything marked TODO is something I don't know yet — fill it in before shipping.
+// Fields I don't know yet are left out (see the TODO comments). Components skip missing fields, and
+// scripts/check-content.mjs fails the build if the word TODO ever appears inside a string here.
 
 export type Accent = "teal" | "iris" | "amber" | "coral";
 
@@ -10,6 +11,7 @@ export const site = {
   name: "Abhineet Deep",
   monogram: "ad",
   role: "Backend engineer in Bengaluru",
+  location: "Bengaluru",
   title: "Abhineet Deep — Backend engineer",
   description:
     "Node.js and AWS, four years building services for payments and banking. Now growing into full-stack and building with LLMs on the side.",
@@ -18,8 +20,6 @@ export const site = {
   email: "abhineetdeepbksc@gmail.com",
   github: "https://github.com/abhineet-deep",
   linkedin: "https://linkedin.com/in/abhineetdeep",
-  // TODO: add the deployed Vercel URL so OG tags resolve absolute image/url paths.
-  url: "https://example.com",
 } as const;
 
 export const nav = {
@@ -39,8 +39,9 @@ export const hero = {
   /** Used for the first render only; the client swaps in the real current month after mount. */
   fallbackNow: { year: 2026, month: 11 } satisfies YearMonth,
   paletteCta: "Command palette",
-  /** Start of the trace axis. */
-  axisStart: { year: 2018, month: 7 } satisfies YearMonth,
+  /** Start of the trace axis: the first job. */
+  axisStart: { year: 2022, month: 7 } satisfies YearMonth,
+  beforeTrace: "Before this trace: B.Tech in computer science, Heritage Institute of Technology, Kolkata (2018–2022).",
 } as const;
 
 export type TraceSpan = {
@@ -48,17 +49,15 @@ export type TraceSpan = {
   label: string;
   /** Indented under the root span. */
   child: boolean;
-  start: YearMonth;
-  /** null = still running, drawn up to the current month. */
-  end: YearMonth | null;
+  /** A span is only drawn when it has a start and an end ("now" counts as an end). */
+  start?: YearMonth;
+  end?: YearMonth | "now";
   accent: Accent;
-  /** Dim the bar (used for the degree span). */
-  dim?: boolean;
-  /** True while a start/end date is a TODO guess: the bar is drawn but its duration is not shown. */
-  placeholder?: boolean;
-  /** Period text shown in the detail panel. */
-  period: string;
-  detail: string;
+  /** Set when only the year is known: the bar is drawn but no duration is shown. */
+  yearOnly?: boolean;
+  /** Text shown in the detail panel; derived from the dates when omitted. */
+  period?: string;
+  detail?: string;
 };
 
 export const traceSpans: TraceSpan[] = [
@@ -66,32 +65,19 @@ export const traceSpans: TraceSpan[] = [
     id: "root",
     label: "abhineet-deep · career",
     child: false,
-    start: { year: 2018, month: 8 },
-    end: null,
+    start: { year: 2022, month: 7 },
+    end: "now",
     accent: "iris",
-    period: "Aug 2018 – now",
-    detail: "Computer science degree, then backend engineering in payments and banking, and now LLM side projects.",
-  },
-  {
-    id: "btech",
-    label: "b.tech, computer science",
-    child: true,
-    start: { year: 2018, month: 8 },
-    end: { year: 2022, month: 6 },
-    accent: "iris",
-    dim: true,
-    period: "Aug 2018 – Jun 2022",
-    detail: "Heritage Institute of Technology, Kolkata.",
+    detail: "Backend engineering in payments and banking, and now LLM side projects.",
   },
   {
     id: "certs",
     label: "aws × 2 + node.js certified",
-    placeholder: true,
     child: true,
-    // The brief only gives "2022" for the certifications.
-    // TODO: confirm the exact month for each certification.
+    // Only the year (2022) is known. TODO: add the month of each certification.
     start: { year: 2022, month: 1 },
     end: { year: 2022, month: 12 },
+    yearOnly: true,
     accent: "amber",
     period: "2022",
     detail: "AWS Certified Developer – Associate, AWS Certified Solutions Architect – Associate and Certified Node.js Developer (Edureka).",
@@ -99,61 +85,46 @@ export const traceSpans: TraceSpan[] = [
   {
     id: "tcs",
     label: "tcs · payments & banking",
-    placeholder: true,
     child: true,
     start: { year: 2022, month: 7 },
-    // TODO: confirm the month I left TCS and joined Virtusa.
-    end: { year: 2025, month: 1 },
+    // TODO: end month at TCS (hidden until set).
     accent: "teal",
-    period: "Jul 2022 – TODO",
-    detail: "Tata Consultancy Services. TODO: add what I built here (no metrics unless they are real).",
+    detail: "Tata Consultancy Services.",
   },
   {
     id: "virtusa",
     label: "virtusa · backend engineer",
-    placeholder: true,
     child: true,
-    // TODO: confirm the month I joined Virtusa.
-    start: { year: 2025, month: 1 },
-    end: null,
+    // TODO: start month at Virtusa (hidden until set).
+    end: "now",
     accent: "teal",
-    period: "TODO – now",
-    detail: "Virtusa. TODO: add what I'm working on here.",
+    detail: "Virtusa.",
   },
   {
     id: "flowsmith",
     label: "flowsmith · founder",
-    placeholder: true,
     child: true,
-    // TODO: confirm when Flowsmith started.
-    start: { year: 2025, month: 6 },
-    end: null,
+    // TODO: start month for Flowsmith (hidden until set).
+    end: "now",
     accent: "coral",
-    period: "TODO – now",
     detail: "My AI automation company. We build automations for clients.",
   },
   {
     id: "llm-gateway",
     label: "llm-gateway",
-    placeholder: true,
     child: true,
-    // TODO: confirm when this project started.
-    start: { year: 2025, month: 9 },
-    end: null,
+    // TODO: start month for llm-gateway (hidden until set).
+    end: "now",
     accent: "coral",
-    period: "TODO – now",
     detail: "A Node.js service on AWS that sits between apps and multiple model providers behind one API.",
   },
   {
     id: "statement-analyzer",
     label: "statement-analyzer",
-    placeholder: true,
     child: true,
-    // TODO: confirm when this project started.
-    start: { year: 2025, month: 10 },
-    end: null,
+    // TODO: start month for statement-analyzer (hidden until set).
+    end: "now",
     accent: "coral",
-    period: "TODO – now",
     detail: "Upload a bank or UPI statement PDF; an LLM categorizes each transaction and a dashboard shows monthly spending.",
   },
 ];
@@ -165,7 +136,7 @@ export type Project = {
   description: string;
   tags: string[];
   accent: Accent;
-  /** TODO: add repo / live URLs when I have them. */
+  /** TODO: repo / live URLs (none yet). */
   href?: string;
 };
 
@@ -209,9 +180,49 @@ export const projects: Record<Project["id"], Project> = {
     // TODO: add specifics (services, scale) only if they are real and shareable.
     description:
       "Four years building Node.js and AWS services for payments and banking at Tata Consultancy Services and Virtusa.",
-    tags: [],
+    tags: ["Node.js", "TypeScript", "AWS Lambda", "API Gateway", "DynamoDB", "SQS"],
     accent: "teal",
   },
+};
+
+export const terminal = {
+  id: "api",
+  heading: "Try the API",
+  intro: "This site has a small read-only JSON API, and the trace above is a real request to it. Run a call and watch a live span land in the trace.",
+  presets: ["/api/engineers/abhineet-deep", "/api/projects", "/api/health", "/api/nope"],
+  placeholder: "/api/projects/flowsmith",
+  hint: "Type any /api/* path and press Enter. Up and down arrows recall earlier requests. The OpenAPI document is at /api/openapi.json.",
+  empty: "Pick a request above, or type one below.",
+  invalid: "Only same-site /api/* paths can be requested here.",
+  networkError: "The request failed before a response arrived.",
+};
+
+export type FlowStepId = "client" | "gateway" | "idem" | "payment" | "queue" | "ledger" | "webhook" | "dlq" | "retry";
+
+// A generic picture of an idempotent payment API. It is not any employer's system.
+// Each explanation is 40 words or fewer.
+export const paymentFlow = {
+  id: "flow",
+  heading: "How a payment request flows",
+  intro: "A generic picture of an idempotent payment API, not any particular company's system. Send a request, or break the ledger step to watch retry and the dead-letter queue.",
+  send: "Send request",
+  running: "Running",
+  simulate: "Simulate failure",
+  hint: "Select any step to read what it does.",
+  doneOk: "Settled. The client is told by webhook.",
+  doneFail: "Gave up after 3 attempts. The message waits in the dead-letter queue for inspection and replay.",
+  waiting: (secs: number) => `Ledger write failed. Retrying in ${secs} s (shown sped up).`,
+  steps: {
+    client: { label: "Client", text: "Sends the payment with an idempotency key, so retrying after a timeout cannot charge the customer twice." },
+    gateway: { label: "API Gateway", text: "The front door. It authenticates the caller, applies throttling and routes the request on to the payment service." },
+    idem: { label: "Idempotency check", text: "Looks the key up in a store. A repeated key returns the saved result instead of running the payment a second time." },
+    payment: { label: "Payment service", text: "Validates the request, records it as pending and puts the work on a queue so the caller is not kept waiting." },
+    queue: { label: "Queue", text: "Buffers the work and absorbs traffic spikes. A message that fails is delivered again, with growing delays between attempts." },
+    ledger: { label: "Ledger", text: "Writes the debit and credit entries as the source of truth. The write is keyed, so repeating it is safe." },
+    webhook: { label: "Webhook", text: "Tells the client the payment settled. It is signed so the receiver can trust it, and retried until acknowledged." },
+    dlq: { label: "Dead-letter queue", text: "Holds messages that kept failing, for inspection and replay, so one bad message cannot block the ones behind it." },
+    retry: { label: "retry with backoff", text: "Waits longer after each failed attempt, for example 1 s then 2 s, so a struggling dependency is not hammered. After the last attempt the message moves to the dead-letter queue." },
+  } satisfies Record<FlowStepId, { label: string; text: string }>,
 };
 
 export const flowsmithSteps = ["New lead", "AI drafts reply", "Saved to CRM"] as const;
@@ -225,13 +236,25 @@ export const stack: string[] = [
   "Docker", "Jest", "Mocha", "GraphQL", "Swagger/OpenAPI",
 ];
 
+/** Groups of items from `stack` above; an item can belong to more than one group. */
+export const stackGroups: { id: string; label: string; items: string[] }[] = [
+  { id: "runtime", label: "Runtime & languages", items: ["Node.js", "TypeScript", "Express", "React", "GraphQL", "Swagger/OpenAPI"] },
+  { id: "aws", label: "AWS", items: ["AWS Lambda", "API Gateway", "DynamoDB", "SQS", "SNS", "EventBridge", "IAM", "CDK", "EC2"] },
+  { id: "data", label: "Data", items: ["MongoDB", "MySQL", "PostgreSQL", "Redis"] },
+  { id: "messaging", label: "Messaging", items: ["SQS", "SNS", "EventBridge", "Kafka"] },
+  { id: "tooling", label: "Testing & tooling", items: ["Jest", "Mocha", "Docker"] },
+];
+
+export const stackSection = { heading: "Stack by area", all: "All" };
+
 export const marqueeAccents: Accent[] = ["teal", "iris", "amber", "coral"];
 
 export type Job = {
-  period: string;
   org: string;
-  role: string;
-  description: string;
+  /** All optional: a missing field is simply not rendered. */
+  period?: string;
+  role?: string;
+  description?: string;
 };
 
 export const experience = {
@@ -239,18 +262,15 @@ export const experience = {
   heading: "Where I've worked",
   jobs: [
     {
-      period: "Jul 2022 – TODO",
       org: "Tata Consultancy Services",
-      role: "TODO: exact job title",
-      description: "TODO: what I built here — services, stack, responsibilities.",
+      // TODO: period, job title and what I built here.
     },
     {
-      period: "TODO – now",
       org: "Virtusa",
       role: "Backend engineer",
-      description: "TODO: what I'm working on — services, stack, responsibilities.",
+      // TODO: period and what I'm working on.
     },
-  ] satisfies Job[],
+  ] as Job[],
   certsHeading: "Certifications",
   certs: [
     { name: "AWS Certified Developer – Associate", year: "2022" },
@@ -266,6 +286,12 @@ export const contact = {
   emailCta: "Email me",
   copyCta: "Copy email",
   copied: "Email copied",
+};
+
+export const notFound = {
+  heading: "No route for that page",
+  home: "Back to home",
+  error: { code: "not_found" },
 };
 
 export const footer = "Built with Next.js, Tailwind and Framer Motion. Press ⌘K to get around.";

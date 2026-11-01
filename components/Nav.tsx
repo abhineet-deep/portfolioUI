@@ -3,6 +3,7 @@
 import { nav, site } from "@/lib/content";
 import { openPalette } from "@/lib/scroll";
 import { KeyHint } from "./KeyHint";
+import { SoundToggle } from "./SoundToggle";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Nav() {
@@ -12,7 +13,7 @@ export function Nav() {
         aria-label="Primary"
         className="flex w-full max-w-xl items-center justify-between gap-2 rounded-full border border-line bg-surface/70 py-1.5 pl-5 pr-2 backdrop-blur-md"
       >
-        <a href="#" className="font-mono text-sm font-medium text-ink" aria-label="Back to top">
+        <a href="#top" className="font-mono text-sm font-medium text-ink" aria-label="Back to top">
           {site.monogram}
         </a>
         <ul className="hidden items-center gap-6 text-sm text-muted md:flex">
@@ -33,6 +34,7 @@ export function Nav() {
           >
             <KeyHint />
           </button>
+          <SoundToggle />
           <ThemeToggle />
         </div>
       </nav>

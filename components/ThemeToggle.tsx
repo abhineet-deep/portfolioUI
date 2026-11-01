@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { useTheme } from "next-themes";
+import { playSound } from "@/lib/sound";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -11,11 +13,37 @@ export function ThemeToggle() {
   const isDark = resolvedTheme !== "light";
   const label = mounted ? (isDark ? "Switch to light theme" : "Switch to dark theme") : "Toggle theme";
 
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const next = isDark ? "light" : "dark";
+    playSound("toggle");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || typeof document.startViewTransition !== "function") {
+      setTheme(next);
+      return;
+    }
+
+    // Circular reveal growing from the button. The new theme is painted on top of a snapshot of the old one.
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
+    const transition = document.startViewTransition(() => {
+      flushSync(() => setTheme(next));
+    });
+    void transition.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration: 650, easing: "cubic-bezier(0.22, 1, 0.36, 1)", pseudoElement: "::view-transition-new(root)" },
+      );
+    });
+  };
+
   return (
     <button
       type="button"
       aria-label={label}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={toggle}
       className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:text-ink"
     >
       {mounted && (
